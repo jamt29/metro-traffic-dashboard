@@ -5,7 +5,7 @@ El dashboard es reproducible y se despliega en Streamlit Community Cloud (gratui
 ## 1. Preparar el repositorio (GitHub)
 
 1. Crear un repositorio público en GitHub, p. ej. `metro-traffic-dashboard`.
-2. Subir el contenido de la carpeta `MetroTraffic_Dashboard/` (mínimo: `app.py`, `requirements.txt`, `data/`, `README.md`).
+2. Subir el contenido completo de la carpeta `01_Dashboard/` (mínimo: `app.py`, `requirements.txt`, `data/`, `README.md` y `.streamlit/`). La carpeta `data/` debe quedar al mismo nivel que `app.py`.
 3. Verificar que `requirements.txt` contenga las dependencias (ya incluido).
 
 ## 2. Desplegar en Streamlit Cloud
@@ -26,5 +26,5 @@ El dashboard es reproducible y se despliega en Streamlit Community Cloud (gratui
 
 - Los datos (`data/Metro_Interstate_Traffic_Volume_clean.csv`) deben estar versionados en el repo;
   Streamlit Cloud no accede a archivos locales fuera del repo.
-- `requirements.txt` ya fija versiones probadas (Streamlit 1.37.1, pandas 2.2.2, plotly 5.24.1).
+- `requirements.txt` fija las dependencias principales e incluye `statsmodels`, necesario para la línea de tendencia OLS de Plotly Express.
 - Si falla la construcción, revisar los logs en la pestaña **Manage app** de Streamlit Cloud.

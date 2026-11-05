@@ -4,12 +4,17 @@ Dashboard interactivo sobre el dataset **Metro Interstate Traffic Volume** (UCI 
 que visualiza los resultados del pipeline de datos (Fases I–V) de la asignatura
 **Análisis de Datos (UEES)**.
 
-## Ejecución
+## Ejecución local
+
+Desde esta carpeta (`01_Dashboard/`), ejecuta:
 
 ```bash
 pip install -r requirements.txt
 streamlit run app.py
 ```
+
+El CSV se encuentra en `data/`, junto a la aplicación, por lo que esta carpeta puede probarse
+localmente y publicarse como raíz de un repositorio de Streamlit Cloud.
 
 Se abre en `http://localhost:8501`.
 
@@ -19,23 +24,29 @@ Se abre en `http://localhost:8501`.
 - Origen: `Metro_Interstate_Traffic_Volume.csv.gz` (UCI). Pipeline documentado en los notebooks
   `01_Ingesta_Perfilado_EDA.ipynb` y `02_Limpieza_Transformacion_Auditoria.ipynb`.
 
-## Estructura
+## Estructura de la aplicación
 
 ```
-MetroTraffic_Dashboard/
+01_Dashboard/
 ├── app.py
 ├── requirements.txt
 ├── README.md
-├── data/
-│   └── Metro_Interstate_Traffic_Volume_clean.csv
-└── figs/
+├── DEPLOY_STREAMLIT_CLOUD.md
+├── .streamlit/config.toml
+└── data/
+    └── Metro_Interstate_Traffic_Volume_clean.csv
 ```
 
-## Enlace interactivo (tras despliegue)
+## Lugar y fecha de entrega
 
-`[URL a completar tras el despliegue en Streamlit Community Cloud]`
+San Salvador, miércoles 4 de noviembre de 2026
 
-Ver `DEPLOY_STREAMLIT_CLOUD.md` para los pasos.
+## Enlace interactivo / repositorio reproducible
+
+- Repositorio (reproducible): https://github.com/DarrFun/metro-traffic-dashboard
+- App en Streamlit Cloud: `[URL a completar tras el despliegue en Streamlit Community Cloud]`
+
+Ver `DEPLOY_STREAMLIT_CLOUD.md` para los pasos del despliegue en la nube.
 
 ## Principios de diseño
 

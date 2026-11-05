@@ -10,6 +10,7 @@ import pandas as pd
 import numpy as np
 import plotly.express as px
 import plotly.graph_objects as go
+from pathlib import Path
 
 st.set_page_config(
     page_title="Metro Traffic · Dashboard",
@@ -34,7 +35,8 @@ ESTACIONES_ORDEN = ["Primavera", "Verano", "Otoño", "Invierno"]
 
 @st.cache_data(show_spinner=False)
 def load_data():
-    df = pd.read_csv("data/Metro_Interstate_Traffic_Volume_clean.csv")
+    data_path = Path(__file__).resolve().parent / "data" / "Metro_Interstate_Traffic_Volume_clean.csv"
+    df = pd.read_csv(data_path)
     df["date_time"] = pd.to_datetime(df["date_time"])
     df["holiday"] = df["holiday"].fillna("None")
     df["dia_nombre"] = df["dia_semana"].map(lambda x: DIAS[x])
@@ -103,6 +105,16 @@ st.caption(
 )
 
 # ---------------------------------------------------------------------------
+# Evitar errores cuando la combinación de filtros no devuelve registros.
+# ---------------------------------------------------------------------------
+if fdf.empty:
+    st.warning(
+        "No hay registros para la combinación actual de filtros. "
+        "Amplía el rango de fechas o selecciona más horas, días o condiciones meteorológicas."
+    )
+    st.stop()
+
+# ---------------------------------------------------------------------------
 # KPIs (overview first)
 # ---------------------------------------------------------------------------
 k1, k2, k3, k4, k5, k6 = st.columns(6)
@@ -111,7 +123,8 @@ k2.metric("Tráfico medio", f"{fdf['traffic_volume'].mean():,.0f} veh/h")
 k3.metric("Tráfico máximo", f"{fdf['traffic_volume'].max():,} veh/h")
 k4.metric("Hora pico medio", f"{fdf.groupby('hora')['traffic_volume'].mean().idxmax():02d}:00")
 k5.metric("Temp. media", f"{fdf['temp_c'].mean():.1f} °C")
-k6.metric("Días con feriado", f"{fdf['es_feriado'].sum():,}")
+dias_feriado = fdf.loc[fdf["es_feriado"] == 1, "date_time"].dt.date.nunique()
+k6.metric("Días con feriado", f"{dias_feriado:,}")
 
 st.markdown("---")
 
@@ -188,8 +201,8 @@ with tabs[0]:
 with tabs[1]:
     st.subheader("Detección de patrones y anomalías temporales")
     st.markdown(
-        "**Narrativa:** el factor temporal es el predictor dominante del tráfico "
-        "(correlación de Spearman hora–tráfico = 0.33 vs. temp = 0.14)."
+        "**Narrativa:** el tráfico muestra una asociación temporal marcada "
+        "(correlación de Spearman hora–tráfico = 0.33 vs. temp = 0.14); esto no implica causalidad."
     )
 
     c1, c2 = st.columns(2)
@@ -240,7 +253,7 @@ with tabs[1]:
         by_est = (fdf.groupby("estacion")["traffic_volume"].mean()
                   .reindex(ESTACIONES_ORDEN).reset_index())
         fig = px.bar(by_est, x="estacion", y="traffic_volume",
-                     color_discrete_sequence=[C_TEMP])
+                     color_discrete_sequence=[C_TRAFFIC])
         fig.update_layout(height=300, margin=dict(l=10, r=10, t=20, b=10),
                           xaxis_title="", yaxis_title="Tráfico medio (veh/h)")
         fig.update_traces(marker_line_width=0)
@@ -255,7 +268,7 @@ with tabs[1]:
 # TAB 3 — Impacto meteorológico
 # ===========================================================================
 with tabs[2]:
-    st.subheader("Análisis de causa raíz: impacto meteorológico")
+    st.subheader("Factores asociados: impacto meteorológico")
     st.markdown(
         "**Narrativa:** las condiciones climáticas modulan el tráfico, pero su efecto es "
         "secundario frente al patrón horario. Se prioriza el canal posición/longitud."
@@ -327,8 +340,8 @@ with tabs[2]:
     st.plotly_chart(fig, use_container_width=True)
 
     st.warning(
-        "Causa raíz: el clima modifica la mediana del tráfico, pero el efecto de la hora "
-        "es dominante. Recomendación: priorizar variables temporales (hora, día, mes) en "
+        "Asociación observada: el tráfico varía entre condiciones meteorológicas, pero la hora "
+        "muestra una relación más marcada. Esto no demuestra causalidad. Recomendación: priorizar variables temporales (hora, día, mes) en "
         "modelos predictivos y usar escalado robusto (RobustScaler) para precipitación."
     )
 
